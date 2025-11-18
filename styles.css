@@ -126,12 +126,30 @@ header{
     height: 50px;
 }
 
+.allTasks{
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+}
+
 .tasks{
     padding: 1rem;
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
     justify-content: center;
+    width: 100%;
+}
+
+.completedTasks{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 .taskItem{
@@ -191,8 +209,16 @@ header{
     opacity: 0;
 }
 
+input[type="checkbox"]{
+   zoom: 1.4;
+}
+
 .hidden{
     display: none;
+}
+
+.lineThrough{
+    text-decoration: line-through;
 }
 
 @media (max-width: 1000px) {
