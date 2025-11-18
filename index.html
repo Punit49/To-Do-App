@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do-App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="container">
+        <header class="primaryColor">
+            <h1 id="title" class="cursorPointer">What-To-Do</h1>
+            <div id="theme-mode">
+                <img src="./dark.png" class="hidden cursorPointer" alt="">
+                <img src="./light(1).png" class="cursorPointer" alt="">
+            </div>
+        </header>
+
+        <main>
+            <div class="wrapper">
+                <div id="add-task-section">
+                    <h2 class="mB headText">Start building your day</h2>
+                    <div id="input-field" class="mB">
+                        <input type="text" name="add-task" placeholder="Enter Tasks" id="addTaskInput">
+                        <button class="cursorPointer" id="add-task-btn">Add Task</button>
+                    </div>  
+                </div>  
+                <hr>
+                <div class="tasks">
+                    
+                </div>
+            </div>
+        </main>
+
+        <span class="hoverDiv notVisible">Edit Task</span>
+    </div>
+
+    <script src="./app.js"></script>
+</body>
+</html>
