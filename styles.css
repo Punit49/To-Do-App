@@ -196,6 +196,7 @@ header{
     display: flex;
     justify-content: space-between;
     gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .fa-solid{
@@ -211,6 +212,8 @@ header{
     font-size: 1.4rem;
     font-weight: 500;
     width: 100%;
+    height: 100%;
+    word-break: keep-all;
 }
 
 .hoverBoxes{
@@ -224,7 +227,7 @@ header{
     font-weight: 300;
     border-radius: 3px;
     position: absolute;
-    bottom: 1.5rem;
+    bottom: 1.6rem;
     left: -1.9rem;
     color: white;
     transition: opacity .5s ease;
@@ -232,6 +235,7 @@ header{
 }
 
 .notVisible{
+    display: none;
     opacity: 0;
 }
 
@@ -262,13 +266,14 @@ input[type="checkbox"]{
     transition: 0.3s ease-in-out;
 }
 
+.hidden{
+    display: none;
+} 
+
 .filters.activeFilter{
     color: #665ce9;
 }
 
-.hidden{
-    display: none;
-}
 
 .lineThrough{
     text-decoration: line-through;

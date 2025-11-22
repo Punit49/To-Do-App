@@ -24,19 +24,19 @@ const getItem = (target) => {
 // Load Tasks in thier respective containers -
 const loadTasks = (target) => {
     let items = getItem("listItems");
-    // console.log(items)
     if(items && items != ""){
         items.forEach(item => {
             let div = makeList(item.data, item.id);
+            let label = div.querySelector('label'); 
             let isThere = target.querySelector(`[id="${item.id}"]`);
             const isCompleted = item.completed;
             if(!isThere){
                 if(isCompleted){
-                    div.classList.add('lineThrough');
+                    label.classList.add('lineThrough');
                     div.querySelector('input').checked = true;
                 }
                 else {
-                    div.classList.remove('lineThrough');
+                    label.classList.remove('lineThrough');
                     div.querySelector('input').checked = false;
                 }
                 if(target.classList.contains("completedTasks") && isCompleted) {
@@ -102,9 +102,9 @@ const deleteTask = (element, e) => {
     setItem("listItems", updatedItems);
 }
 
-const makePopup = (event, icon) => {
+const makePopup = (event) => {
     let popupText = event.target.dataset.text;
-    let parent = icon.parentElement;
+    let parent = event.target.parentElement;
     parent.append(hoverDiv);
     hoverDiv.textContent = popupText;
 }
@@ -114,15 +114,16 @@ const makeList = (data, id = itemId) => {
     let div = document.createElement('div');
     div.classList.add("taskItem");
     div.setAttribute('id', (`${id}`));
+    div.setAttribute('draggable', true);
 
     div.style.backgroundColor = `#${generateColor()}`;
     div.innerHTML = `
         <section class="taskBox">
             <span>
                 <input type="checkbox" name="inputCheck" id=task${id} class="inputheckBox">
-                <label class="taskData" for=task${id}> ${data} </label>
+                <label class="taskData"> ${data} </label>
             </span>
-            <span>
+            <span class="iconBox">
                 <span class="hoverBoxes">
                     <i class="fa-solid fa-pen editBtn iconHover" data-text="Edit Task"></i>
                 </span>
@@ -134,44 +135,9 @@ const makeList = (data, id = itemId) => {
     `;
 
     let deleteItem = div.querySelector(".deleteBtn");
-    let editBtn = div.querySelector('.editBtn');
-    let iconHover = div.querySelectorAll('.iconHover');
     let inputheckBox = div.querySelector('.inputheckBox');
 
     deleteItem.addEventListener("click", deleteTask);
-
-    // Here i used Event Delegation
-    allTasksDiv.addEventListener('click', (e) => {
-        // Edit
-        if(e.target.classList.contains("editBtn")){
-            const taskItem = e.target.closest(".taskItem");
-            editFunction(taskItem, e);
-        }
-
-        // Delete
-        if(e.target.classList.contains("deleteBtn")){
-            const taskItem = e.target.closest(".taskItem");
-            const instances = document.querySelectorAll(`[id="${taskItem.id}"]`);
-            instances.forEach(task => {
-                deleteTask(task, e);
-            })
-        }
-    });
-
-    allTasksDiv.addEventListener('dblclick', (e) => {
-        const taskItem = e.target.closest(".taskItem");
-        editFunction(taskItem, e);
-    });
-
-    iconHover.forEach((icon) => {
-        icon.addEventListener("mouseover", (event) => {
-            makePopup(event, icon);
-            hoverDiv.classList.remove('notVisible');
-        });
-        icon.addEventListener("mouseleave", (event) => {
-            hoverDiv.classList.add('notVisible');
-        });
-    })
 
     inputheckBox.addEventListener('change', (event) => {
         let parent = event.target.closest('div');
@@ -203,7 +169,7 @@ const makeList = (data, id = itemId) => {
 
 // Creating and attaching task container
 const createTask = (e) => {
-    console.log(getItem("listItems"))
+    console.log((getItem("listItems")));
     let data = input.value.trim();
     if(data && data != ""){
         let listItems = JSON.parse(localStorage.getItem("listItems")) || [];
@@ -227,12 +193,14 @@ const createTask = (e) => {
 
 const makeInput = (data) => {
     let input = document.createElement('input');
+    input.setAttribute("id", `input-${data.trim()}`);
     input.classList.add("editInput");
     input.value = data;
     return input;
 }
 
 const handleEdit = (input, closedtBox) => {
+    document.querySelector('.editInput').remove();
     let listItems = getItem('listItems');
     let data = closedtBox.querySelector(".taskData");
     input.classList.add('hidden');
@@ -240,7 +208,6 @@ const handleEdit = (input, closedtBox) => {
     let updatedArray = listItems.map((item) => {
         if(item.data.trim() === data.textContent.trim()){
             item.data = input.value;
-            console.log(item.data);
         }
         return item;
     });
@@ -264,10 +231,54 @@ const editFunction = (div, e) => {
             }
         })
         input.addEventListener('blur', (event) => {
-               handleEdit(input, closestBox);
+            handleEdit(input, closestBox);
         });
     }
 }
 
 // Main Event listener
 addTaskBtn.addEventListener('click', createTask);
+
+allTasksDiv.addEventListener('click', (e) => {
+    // Edit
+    if(e.target.classList.contains("editBtn")){
+        const taskItem = e.target.closest(".taskItem");
+        editFunction(taskItem, e);
+    }
+    // Delete
+    if(e.target.classList.contains("deleteBtn")){
+        const taskItem = e.target.closest(".taskItem");
+        const instances = document.querySelectorAll(`[id="${taskItem.id}"]`);
+        instances.forEach(task => {
+            deleteTask(task, e);
+        })
+    }
+});
+
+allTasksDiv.addEventListener('dblclick', (e) => {
+    const taskItem = e.target.closest(".taskItem");
+    editFunction(taskItem, e);
+
+});
+
+allTasksDiv.addEventListener('dragstart', (e) => {
+    console.log(e.target);
+});
+
+allTasksDiv.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    // console.log("DragOver", e.target);
+});
+
+ // Here i used Event Delegation
+allTasksDiv.addEventListener('mouseover', (event) => {
+    if(event.target.classList.contains("iconHover")){
+        makePopup(event);
+        hoverDiv.classList.remove('notVisible');
+        event.target.addEventListener('mouseleave', (event) => {
+            if(event.target.classList.contains("iconHover")){
+                hoverDiv.classList.add('notVisible');
+            }
+        });
+    }
+});
