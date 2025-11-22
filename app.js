@@ -6,7 +6,10 @@ let itemId = JSON.parse(localStorage.getItem("itemId")) || 1;
 let isInputActive = false;
 let hoverDiv = document.querySelector(".hoverDiv");
 let completedTasks = document.querySelector(".completedTasks")
-let completedTaskArray = JSON.parse(localStorage.getItem("completedTask")) || [];
+let pendingTasks = document.querySelector(".pendingTasks")
+let filters = document.querySelectorAll(".filters");
+let underline = document.querySelector(".underline");
+let allTasksDiv = document.querySelector(".allTasks");
 
 // Set an item in localStorage -
 const setItem = (target, data) => {
@@ -18,22 +21,71 @@ const getItem = (target) => {
     return JSON.parse(localStorage.getItem(target)) || [];
 }
 
-// Window load event handling
-window.addEventListener('load', () => {
+// Load Tasks in thier respective containers -
+const loadTasks = (target) => {
     let items = getItem("listItems");
+    // console.log(items)
     if(items && items != ""){
         items.forEach(item => {
             let div = makeList(item.data, item.id);
-            if(item.completed){
-                completedTasks.prepend(div);
-                div.querySelector(".inputheckBox").checked = true;
-            }
-            else{
-                tasks.prepend(div);
+            let isThere = target.querySelector(`[id="${item.id}"]`);
+            const isCompleted = item.completed;
+            if(!isThere){
+                if(isCompleted){
+                    div.classList.add('lineThrough');
+                    div.querySelector('input').checked = true;
+                }
+                else {
+                    div.classList.remove('lineThrough');
+                    div.querySelector('input').checked = false;
+                }
+                if(target.classList.contains("completedTasks") && isCompleted) {
+                    completedTasks.prepend(div);
+                    return;
+                }
+                else if(!isCompleted && target.classList.contains("pendingTasks")){
+                    pendingTasks.prepend(div);
+                    return;
+                }
             }
         });
     } 
-})
+}
+
+// Window load event handling
+window.addEventListener('load', () => {
+    loadTasks(tasks);
+});
+
+const renderItemsDiv = (tab) => {
+    let activeDiv = document.querySelector(".activeDiv");
+    activeDiv.classList.remove("activeDiv");
+    let renderDiv = document.querySelector(`#${tab.dataset.type}`);
+    renderDiv.classList.add("activeDiv");
+    let target = renderDiv.querySelector(".containerOfTask");
+    loadTasks(target);
+}
+
+// Handling Filters - 
+function moveUnderline(activeTab){
+    let rect = activeTab.getBoundingClientRect();
+    let parentRect = activeTab.parentElement.getBoundingClientRect();
+    
+    underline.style.width = `${rect.width}px`;
+    underline.style.left = (rect.left - parentRect.left) + "px";
+}
+
+filters.forEach((tab) => {
+    tab.addEventListener('click', () => {
+        let active = document.querySelector(".filters.activeFilter");
+        active.classList.remove("activeFilter");
+        tab.classList.add('activeFilter');
+        renderItemsDiv(tab);
+        moveUnderline(tab);
+    });
+});
+
+moveUnderline(document.querySelector(".filters.activeFilter"));
 
 // Generate Background color for task container - 
 const generateColor = () => {
@@ -42,18 +94,12 @@ const generateColor = () => {
 }
 
 // Delete a task
-const deleteTask = (e) => {
-    let item = e.target.closest('div');
-    let itemId = item.getAttribute('id');
+const deleteTask = (element, e) => {
+    let parent = element.parentElement;
+    if(parent) parent.removeChild(element);
     let listItems = getItem('listItems');
-    let isCompleted = listItems.filter(item => item.id == itemId);
-    let updatedItems = listItems.filter(item => item.id != itemId);
+    let updatedItems = listItems.filter(item => item.id != element.id);
     setItem("listItems", updatedItems);
-    if(isCompleted[0].completed){
-        completedTasks.removeChild(item);
-        return;
-    }
-    tasks.removeChild(item);
 }
 
 const makePopup = (event, icon) => {
@@ -94,12 +140,27 @@ const makeList = (data, id = itemId) => {
 
     deleteItem.addEventListener("click", deleteTask);
 
-    editBtn.addEventListener('click', (e) => {
-         editFunction(div, e);
-    })
+    // Here i used Event Delegation
+    allTasksDiv.addEventListener('click', (e) => {
+        // Edit
+        if(e.target.classList.contains("editBtn")){
+            const taskItem = e.target.closest(".taskItem");
+            editFunction(taskItem, e);
+        }
 
-    div.addEventListener("dblclick", (e) => {
-         editFunction(div, e);
+        // Delete
+        if(e.target.classList.contains("deleteBtn")){
+            const taskItem = e.target.closest(".taskItem");
+            const instances = document.querySelectorAll(`[id="${taskItem.id}"]`);
+            instances.forEach(task => {
+                deleteTask(task, e);
+            })
+        }
+    });
+
+    allTasksDiv.addEventListener('dblclick', (e) => {
+        const taskItem = e.target.closest(".taskItem");
+        editFunction(taskItem, e);
     });
 
     iconHover.forEach((icon) => {
@@ -120,23 +181,21 @@ const makeList = (data, id = itemId) => {
         let completeItem = listItems.map((item) => {
             if(item.id == taskId){
                 if(item.completed){
+                    pendingTasks.prepend(parent);
                     label.classList.remove("lineThrough");
                     item.completed = false;
                 }
                 else {
                     item.completed = true;
                     label.classList.add("lineThrough");
+                    if(!completedTasks.querySelector(`[id="${item.id}"]`)){
+                        completedTasks.prepend(parent);
+                    }
                 }
             } 
             return item;
         });
         setItem('listItems', completeItem);
-        if(inputheckBox.checked){
-            completedTasks.prepend(parent);
-        }
-        else{
-            tasks.prepend(parent);
-        }
     })
 
     return div;
@@ -144,6 +203,7 @@ const makeList = (data, id = itemId) => {
 
 // Creating and attaching task container
 const createTask = (e) => {
+    console.log(getItem("listItems"))
     let data = input.value.trim();
     if(data && data != ""){
         let listItems = JSON.parse(localStorage.getItem("listItems")) || [];
@@ -178,8 +238,9 @@ const handleEdit = (input, closedtBox) => {
     input.classList.add('hidden');
     closedtBox.classList.remove("hidden");
     let updatedArray = listItems.map((item) => {
-        if(item.data === data.textContent){
+        if(item.data.trim() === data.textContent.trim()){
             item.data = input.value;
+            console.log(item.data);
         }
         return item;
     });
@@ -203,9 +264,7 @@ const editFunction = (div, e) => {
             }
         })
         input.addEventListener('blur', (event) => {
-            if(isInputActive){
                handleEdit(input, closestBox);
-            }
         });
     }
 }

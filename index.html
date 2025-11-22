@@ -28,17 +28,33 @@
                 </div>  
                 <hr>
                 <div class="allTasks">
-                    <div class="tasks">
-                    
-                        
+                    <div id="filterPending" class="fullTasks taskDivs activeDiv">
+                        <h2>Pending Tasks</h2>
+                        <div class="containerOfTask pendingTasks tasks">
+                            
+                        </div>
                     </div>
-
-                    <h3>Completed</h3>
                     
-                    <div class="completedTasks">
+                    <div id="filterCompleted" class="taskDivs">
+                        <h3>Completed</h3>
+                        <div class="containerOfTask completedTasks">
 
+                        </div>
                     </div>
                 </div>
+
+                <div class="tabs">
+                    <span data-type="filterPending" class="filters activeFilter">Pending Tasks</span>
+                    <span data-type="filterCompleted" class="filters">Completed Tasks</span>
+                    <div class="underline"></div>
+                </div>
+
+                <h1 class="hidden">
+                    Button mAgic
+                    <button onclick="getDelete()">
+                        Get Deleted
+                    </button>
+                </h1>
             </div>
         </main>
 
