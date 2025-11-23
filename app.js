@@ -21,7 +21,7 @@ const getItem = (target) => {
     return JSON.parse(localStorage.getItem(target));
 }
 
-let listItems = getItem("listItems") || [];
+// let listItems = getItem("listItems") || [];
 
 // Changing Themes
 let themeMode = getItem("themeMode") || "light";
