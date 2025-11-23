@@ -12,6 +12,32 @@ let underline = document.querySelector(".underline");
 let allTasksDiv = document.querySelector(".allTasks");
 const themeIcon = document.querySelector(".theme");
 
+// Set an item in localStorage -
+const setItem = (target, data) => {
+    localStorage.setItem(target, JSON.stringify(data));
+}
+
+// Accessing an item from localStorage -
+const getItem = (target) => {
+    return JSON.parse(localStorage.getItem(target));
+}
+
+let themeMode = getItem("themeMode") || "light";
+const toggleTheme = () => {
+    if(themeMode == "light"){
+        themeMode = "dark";
+        themeIcon.setAttribute("src", "./light(1).png");
+    } else if(themeMode == "dark"){
+        themeIcon.setAttribute("src", "./dark.png");
+        themeMode = "light"
+    }
+    document.querySelector('body').classList.toggle("light");
+    setItem("themeMode", themeMode);
+}
+
+themeIcon.addEventListener("click", () => {
+    toggleTheme();
+})
 
 // Load Tasks in thier respective containers -
 const loadTasks = (target) => {
@@ -46,7 +72,11 @@ const loadTasks = (target) => {
 
 // Window load event handling
 window.addEventListener('load', async () => {
-    
+    if(themeMode == "light"){
+        document.querySelector("body").classList.add("light");
+        themeIcon.setAttribute("src", "./dark.png");
+    }
+
     loadTasks(tasks);
     loadTasks(completedTasks);
 
