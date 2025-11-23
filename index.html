@@ -9,10 +9,10 @@
 </head>
 <body>
     <div class="container">
-        <header class="primaryColor">
-            <h1 id="title" class="cursorPointer">What-To-Do</h1>
+        <header class="flex">
+            <h1 id="title" class="cursorPointer primaryColor">What-To-Do</h1>
             <div id="theme-mode">
-                <img src="./light(1).png" class="theme scursorPointer" alt="">
+                <img src="./light(1).png" class="theme cursorPointer" alt="">
             </div>
         </header>
 
@@ -20,34 +20,33 @@
             <div class="wrapper">
                 <div id="add-task-section">
                     <h2 class="mB headText">Start building your day</h2>
-                    <div id="input-field" class="mB">
+                    <div id="input-field" class="mB flex gap-1">
                         <input type="text" name="add-task" placeholder="Enter Tasks" id="addTaskInput">
                         <button class="cursorPointer" id="add-task-btn">Add Task</button>
                     </div>  
                 </div>  
                 <hr>
-                <div class="allTasks">
+                <div class="allTasks flex center">
                     <div id="filterPending" class="fullTasks taskDivs activeDiv">
                         <h3>Pending Tasks</h3>
-                        <div class="containerOfTask pendingTasks tasks">
+                        <div class="containerOfTask pendingTasks flex center gap-1">
                             
                         </div>
                     </div>
 
                     <div id="filterCompleted" class="taskDivs">
                         <h3>Completed</h3>
-                        <div class="containerOfTask completedTasks">
+                        <div class="containerOfTask completedTasks flex center">
 
                         </div>
                     </div>
                 </div>
 
                 <div class="tabs">
-                    <span data-type="filterPending" class="filters activeFilter">Pending Tasks</span>
-                    <span data-type="filterCompleted" class="filters">Completed Tasks</span>
+                    <span data-type="filterPending" class="filters activeFilter cursorPointer">Pending Tasks</span>
+                    <span data-type="filterCompleted" class="filters cursorPointer">Completed Tasks</span>
                     <div class="underline"></div>
                 </div>
-
             </div>
         </main>
 

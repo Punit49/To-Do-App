@@ -1,5 +1,5 @@
 const addTaskBtn = document.querySelector("#add-task-btn");
-const tasks = document.querySelector(".tasks");
+const pendingtasks = document.querySelector(".pendingTasks");
 const input = document.querySelector("#addTaskInput");
 let itemArray = [];
 let itemId = JSON.parse(localStorage.getItem("itemId")) || 1;
@@ -77,7 +77,7 @@ window.addEventListener('load', async () => {
         themeIcon.setAttribute("src", "./dark.png");
     }
 
-    loadTasks(tasks);
+    loadTasks(pendingtasks);
     loadTasks(completedTasks);
 
     const pendingOrder = JSON.parse(localStorage.getItem("pendingOrder"));
@@ -158,7 +158,7 @@ const makeList = (data, id = itemId) => {
 
     div.style.backgroundColor = `#${generateColor()}`;
     div.innerHTML = `
-        <section class="taskBox">
+        <section class="taskBox flex gap-1">
             <span>
                 <input type="checkbox" name="inputCheck" id=task${id} class="inputheckBox">
                 <label class="taskData"> ${data} </label>
@@ -224,7 +224,7 @@ const createTask = (e) => {
         }
         listItems.push(itemObject);
         setItem("listItems", listItems);
-        tasks.prepend(div);
+        pendingtasks.prepend(div);
         itemId++;
         localStorage.setItem("itemId", JSON.stringify(itemId)); 
     }
