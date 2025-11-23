@@ -10,16 +10,8 @@ let pendingTasks = document.querySelector(".pendingTasks")
 let filters = document.querySelectorAll(".filters");
 let underline = document.querySelector(".underline");
 let allTasksDiv = document.querySelector(".allTasks");
+const themeIcon = document.querySelector(".theme");
 
-// Set an item in localStorage -
-const setItem = (target, data) => {
-    localStorage.setItem(target, JSON.stringify(data));
-}
-
-// Accessing an item from localStorage -
-const getItem = (target) => {
-    return JSON.parse(localStorage.getItem(target)) || [];
-}
 
 // Load Tasks in thier respective containers -
 const loadTasks = (target) => {
@@ -53,8 +45,26 @@ const loadTasks = (target) => {
 }
 
 // Window load event handling
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
+    
     loadTasks(tasks);
+    loadTasks(completedTasks);
+
+    const pendingOrder = JSON.parse(localStorage.getItem("pendingOrder"));
+    const completeOrder = JSON.parse(localStorage.getItem("completeOrder"));
+
+    if (pendingOrder) {
+        pendingOrder.forEach(id => {
+            const item = document.getElementById(id);
+            if(item) pendingTasks.appendChild(item);
+        });
+    }
+    if (completeOrder) {
+        completeOrder.forEach(id => {
+            const item = document.getElementById(id);
+            if(item) completedTasks.appendChild(item);
+        });
+    }
 });
 
 const renderItemsDiv = (tab) => {
@@ -163,13 +173,12 @@ const makeList = (data, id = itemId) => {
         });
         setItem('listItems', completeItem);
     })
-
     return div;
 }
 
 // Creating and attaching task container
 const createTask = (e) => {
-    console.log((getItem("listItems")));
+
     let data = input.value.trim();
     if(data && data != ""){
         let listItems = JSON.parse(localStorage.getItem("listItems")) || [];
@@ -189,6 +198,7 @@ const createTask = (e) => {
         itemId++;
         localStorage.setItem("itemId", JSON.stringify(itemId)); 
     }
+    input.value = "";
 };
 
 const makeInput = (data) => {
@@ -200,7 +210,6 @@ const makeInput = (data) => {
 }
 
 const handleEdit = (input, closedtBox) => {
-    document.querySelector('.editInput').remove();
     let listItems = getItem('listItems');
     let data = closedtBox.querySelector(".taskData");
     input.classList.add('hidden');
@@ -258,16 +267,43 @@ allTasksDiv.addEventListener('click', (e) => {
 allTasksDiv.addEventListener('dblclick', (e) => {
     const taskItem = e.target.closest(".taskItem");
     editFunction(taskItem, e);
-
 });
 
+// Drag and drop 
+
+const saveOrder = () => {
+    let pendingOrder = [];
+    let completeOrder = [];
+    pendingTasks.querySelectorAll('.taskItem').forEach(item => {
+        pendingOrder.push(item.id);
+    });
+    completedTasks.querySelectorAll('.taskItem').forEach(item => {
+        completeOrder.push(item.id);
+    });
+    localStorage.setItem("pendingOrder", JSON.stringify(pendingOrder));
+    localStorage.setItem("completeOrder", JSON.stringify(completeOrder));
+}
+
+let selected = null;
+
 allTasksDiv.addEventListener('dragstart', (e) => {
-    console.log(e.target);
+    if(e.target.classList.contains("taskItem")){
+        selected = e.target;
+    }
 });
 
 allTasksDiv.addEventListener('dragover', (e) => {
     e.preventDefault();
-    // console.log("DragOver", e.target);
+    const target = e.target.closest(".taskItem");
+    if(!target || target === selected) return;
+    let parent = target.parentElement;
+    parent.insertBefore(selected, target);
+});
+
+allTasksDiv.addEventListener('drop', (e) => {
+    e.preventDefault();
+    selected = null;
+    saveOrder();
 });
 
  // Here i used Event Delegation
