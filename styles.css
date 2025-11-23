@@ -145,6 +145,7 @@ header{
 }
 
 #theme-mode img{
+    cursor: pointer;
     height: 50px;
 }
 
@@ -205,11 +206,11 @@ header{
     font-weight: 500;
     max-width: 40%;
     height: 100%;
-    min-width: 85%;
+    min-width: 90%;
     padding: 1rem;
     border-radius: 15px;
     word-break: break-all;
-    cursor: pointer;
+    cursor: grab;
 }
 
 .taskBox{
@@ -302,10 +303,6 @@ input[type="checkbox"]{
 .activeDiv{
     display: block;
     opacity: 1;
-}
-
-#theme-mode .active{
-    
 }
 
 @media (max-width: 1000px) {
