@@ -1,5 +1,4 @@
 const addTaskBtn = document.querySelector("#add-task-btn");
-const pendingtasks = document.querySelector(".pendingTasks");
 const input = document.querySelector("#addTaskInput");
 let itemArray = [];
 let itemId = JSON.parse(localStorage.getItem("itemId")) || 1;
@@ -22,7 +21,11 @@ const getItem = (target) => {
     return JSON.parse(localStorage.getItem(target));
 }
 
+let listItems = getItem("listItems") || [];
+
+// Changing Themes
 let themeMode = getItem("themeMode") || "light";
+
 const toggleTheme = () => {
     if(themeMode == "light"){
         themeMode = "dark";
@@ -77,11 +80,11 @@ window.addEventListener('load', async () => {
         themeIcon.setAttribute("src", "./dark.png");
     }
 
-    loadTasks(pendingtasks);
+    loadTasks(pendingTasks);
     loadTasks(completedTasks);
 
-    const pendingOrder = JSON.parse(localStorage.getItem("pendingOrder"));
-    const completeOrder = JSON.parse(localStorage.getItem("completeOrder"));
+    const pendingOrder = getItem("pendingOrder");
+    const completeOrder = getItem("completeOrder");
 
     if (pendingOrder) {
         pendingOrder.forEach(id => {
@@ -89,6 +92,7 @@ window.addEventListener('load', async () => {
             if(item) pendingTasks.appendChild(item);
         });
     }
+
     if (completeOrder) {
         completeOrder.forEach(id => {
             const item = document.getElementById(id);
@@ -97,6 +101,7 @@ window.addEventListener('load', async () => {
     }
 });
 
+// Handling Filters - 
 const renderItemsDiv = (tab) => {
     let activeDiv = document.querySelector(".activeDiv");
     activeDiv.classList.remove("activeDiv");
@@ -106,7 +111,6 @@ const renderItemsDiv = (tab) => {
     loadTasks(target);
 }
 
-// Handling Filters - 
 function moveUnderline(activeTab){
     let rect = activeTab.getBoundingClientRect();
     let parentRect = activeTab.parentElement.getBoundingClientRect();
@@ -134,7 +138,7 @@ const generateColor = () => {
 }
 
 // Delete a task
-const deleteTask = (element, e) => {
+const deleteTask = (element) => {
     let parent = element.parentElement;
     if(parent) parent.removeChild(element);
     let listItems = getItem('listItems');
@@ -142,6 +146,7 @@ const deleteTask = (element, e) => {
     setItem("listItems", updatedItems);
 }
 
+// Tooltip popup
 const makePopup = (event) => {
     let popupText = event.target.dataset.text;
     let parent = event.target.parentElement;
@@ -177,7 +182,9 @@ const makeList = (data, id = itemId) => {
     let deleteItem = div.querySelector(".deleteBtn");
     let inputheckBox = div.querySelector('.inputheckBox');
 
-    deleteItem.addEventListener("click", deleteTask);
+    deleteItem.addEventListener("click", () => {
+        deleteTask(div);
+    });
 
     inputheckBox.addEventListener('change', (event) => {
         let parent = event.target.closest('div');
@@ -208,14 +215,13 @@ const makeList = (data, id = itemId) => {
 
 // Creating and attaching task container
 const createTask = (e) => {
-
     let data = input.value.trim();
     if(data && data != ""){
-        let listItems = JSON.parse(localStorage.getItem("listItems")) || [];
+        let listItems = getItem("listItems") || [];
         let isItem = listItems.some(item => item.data.toLowerCase() === data.toLowerCase());
         if(isItem) return;
         let div = makeList(data);
-        itemId = JSON.parse(localStorage.getItem("itemId")) || itemId;
+        itemId = getItem("itemId") || itemId;
         let itemObject = {
             data: `${data}`,
             time: Date.now(),
@@ -224,16 +230,16 @@ const createTask = (e) => {
         }
         listItems.push(itemObject);
         setItem("listItems", listItems);
-        pendingtasks.prepend(div);
+        pendingTasks.prepend(div);
         itemId++;
         localStorage.setItem("itemId", JSON.stringify(itemId)); 
     }
     input.value = "";
 };
 
+// Edit Feature
 const makeInput = (data) => {
     let input = document.createElement('input');
-    input.setAttribute("id", `input-${data.trim()}`);
     input.classList.add("editInput");
     input.value = data;
     return input;
@@ -254,7 +260,6 @@ const handleEdit = (input, closedtBox) => {
     data.textContent = input.value;
 }
 
-// Edit Feature
 const editFunction = (div, e) => {
     let closestBox = e.target.closest('section');
     if(closestBox != null){
@@ -300,7 +305,6 @@ allTasksDiv.addEventListener('dblclick', (e) => {
 });
 
 // Drag and drop 
-
 const saveOrder = () => {
     let pendingOrder = [];
     let completeOrder = [];

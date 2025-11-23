@@ -24,6 +24,7 @@ body{
 
 .light{
     --bg-color: #e1e1e1; 
+    --bg-color: #ece6d6; 
     --text-color: #131313;
     --heading-color:  #1e1d1d;
     --input-place: rgba(13, 13, 13, 0.5);
@@ -137,7 +138,8 @@ header{
 
 #title{
     font-size: 2.5rem;
-    color: #6297F0;
+    color: #3780ff;
+    font-weight: 900;
 }
 
 #theme-mode img{
