@@ -316,6 +316,10 @@ const toggleTheme = () => {
 
 DOM.addBtn.addEventListener("click", () => {
     addTask();
+});
+
+DOM.input.addEventListener("keypress", (e) => {
+    if(e.key == "Enter") addTask();
 })
 
 DOM.themeIcon.addEventListener("click", () => {
